@@ -90,7 +90,7 @@ message(STATUS "pybind11 v${${PROJECT_NAME}_VERSION}")
 
 option (USE_PYTHON_INCLUDE_DIR "Install pybind11 headers in Python include directory instead of default installation prefix" OFF)
 if (USE_PYTHON_INCLUDE_DIR)
-    file(RELATIVE_PATH CMAKE_INSTALL_INCLUDEDIR ${CMAKE_INSTALL_PREFIX} ${PYTHON_INCLUDE_DIRS})
+    file(RELATIVE_PATH DEST_INCLUDE_DIR ${CMAKE_INSTALL_PREFIX} ${PYTHON_INCLUDE_DIRS})
 endif()
 
 if(NOT (CMAKE_VERSION VERSION_LESS 3.0))  # CMake >= 3.0
@@ -99,7 +99,7 @@ if(NOT (CMAKE_VERSION VERSION_LESS 3.0))  # CMake >= 3.0
   add_library(pybind11::pybind11 ALIAS pybind11)  # to match exported target
   target_include_directories(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_INCLUDE_DIR}>
                                                 $<BUILD_INTERFACE:${PYTHON_INCLUDE_DIRS}>
-                                                $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+                                                $<INSTALL_INTERFACE:${DEST_INCLUDE_DIR}>)
   target_compile_options(pybind11 INTERFACE $<BUILD_INTERFACE:${PYBIND11_CPP_STANDARD}>)
 
   add_library(module INTERFACE)
@@ -120,9 +120,9 @@ if(NOT (CMAKE_VERSION VERSION_LESS 3.0))  # CMake >= 3.0
 endif()
 
 if (PYBIND11_INSTALL)
-  install(DIRECTORY ${PYBIND11_INCLUDE_DIR}/pybind11 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  install(DIRECTORY ${PYBIND11_INCLUDE_DIR}/pybind11 DESTINATION ${DEST_INCLUDE_DIR})
   # GNUInstallDirs "DATADIR" wrong here; CMake search path wants "share".
-  set(PYBIND11_CMAKECONFIG_INSTALL_DIR "share/cmake/${PROJECT_NAME}" CACHE STRING "install path for pybind11Config.cmake")
+  set(PYBIND11_CMAKECONFIG_INSTALL_DIR "${CMAKE_BINARY_DIR}" CACHE STRING "install path for pybind11Config.cmake")
 
   configure_package_config_file(tools/${PROJECT_NAME}Config.cmake.in
                                 "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}Config.cmake"
